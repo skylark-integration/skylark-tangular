@@ -37,11 +37,16 @@
                 deps: deps.map(function(dep){
                   return absolute(dep,id);
                 }),
+                resolved: false,
                 exports: null
             };
             require(id);
         } else {
-            map[id] = factory;
+            map[id] = {
+                factory : null,
+                resolved : true,
+                exports : factory
+            };
         }
     };
     require = globals.require = function(id) {
@@ -49,14 +54,15 @@
             throw new Error('Module ' + id + ' has not been defined');
         }
         var module = map[id];
-        if (!module.exports) {
+        if (!module.resolved) {
             var args = [];
 
             module.deps.forEach(function(dep){
                 args.push(require(dep));
             })
 
-            module.exports = module.factory.apply(globals, args);
+            module.exports = module.factory.apply(globals, args) || null;
+            module.resolved = true;
         }
         return module.exports;
     };
@@ -372,6 +378,8 @@ define('skylark-tangular/Template',[
 		return (new Function('$text', code))(self.builder);
 	};
 
+	return Template	;
+
 });
 define('skylark-tangular/compile',[
 	"./tangular",
@@ -444,12 +452,10 @@ define('skylark-tangular/globals',[
 	"./tangular",
 	"./helpers"
 ],function(tangular){
-	return tangular.globals = function() {
-		var W = window;
-		W.Ta = W.Tangular = tangular;
-		W.Thelpers = tangular.helpers;
-		return W;
-	};
+	var W = window;
+	W.Ta = W.Tangular = tangular;
+	W.Thelpers = tangular.helpers;
+	return W;
 });
 define('skylark-tangular/main',[
 	"./tangular",

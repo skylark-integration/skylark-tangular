@@ -267,4 +267,6 @@ define([
 		return (new Function('$text', code))(self.builder);
 	};
 
+	return Template	;
+
 });

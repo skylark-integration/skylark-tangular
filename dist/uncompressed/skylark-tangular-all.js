@@ -37,11 +37,16 @@
                 deps: deps.map(function(dep){
                   return absolute(dep,id);
                 }),
+                resolved: false,
                 exports: null
             };
             require(id);
         } else {
-            map[id] = factory;
+            map[id] = {
+                factory : null,
+                resolved : true,
+                exports : factory
+            };
         }
     };
     require = globals.require = function(id) {
@@ -49,14 +54,15 @@
             throw new Error('Module ' + id + ' has not been defined');
         }
         var module = map[id];
-        if (!module.exports) {
+        if (!module.resolved) {
             var args = [];
 
             module.deps.forEach(function(dep){
                 args.push(require(dep));
             })
 
-            module.exports = module.factory.apply(globals, args);
+            module.exports = module.factory.apply(globals, args) || null;
+            module.resolved = true;
         }
         return module.exports;
     };
@@ -80,11 +86,46 @@
 
 })(function(define,require) {
 
-define('skylark-langx/skylark',[], function() {
-    var skylark = {
+define('skylark-langx-ns/_attach',[],function(){
+    return  function attach(obj1,path,obj2) {
+        if (typeof path == "string") {
+            path = path.split(".");//[path]
+        };
+        var length = path.length,
+            ns=obj1,
+            i=0,
+            name = path[i++];
 
+        while (i < length) {
+            ns = ns[name] = ns[name] || {};
+            name = path[i++];
+        }
+
+        return ns[name] = obj2;
+    }
+});
+define('skylark-langx-ns/ns',[
+    "./_attach"
+], function(_attach) {
+    var skylark = {
+    	attach : function(path,obj) {
+    		return _attach(skylark,path,obj);
+    	}
     };
     return skylark;
+});
+
+define('skylark-langx-ns/main',[
+	"./ns"
+],function(skylark){
+	return skylark;
+});
+define('skylark-langx-ns', ['skylark-langx-ns/main'], function (main) { return main; });
+
+define('skylark-langx/skylark',[
+    "skylark-langx-ns"
+], function(ns) {
+	return ns;
 });
 
 define('skylark-tangular/tangular',[
@@ -379,6 +420,8 @@ define('skylark-tangular/Template',[
 		return (new Function('$text', code))(self.builder);
 	};
 
+	return Template	;
+
 });
 define('skylark-tangular/compile',[
 	"./tangular",
@@ -451,12 +494,10 @@ define('skylark-tangular/globals',[
 	"./tangular",
 	"./helpers"
 ],function(tangular){
-	return tangular.globals = function() {
-		var W = window;
-		W.Ta = W.Tangular = tangular;
-		W.Thelpers = tangular.helpers;
-		return W;
-	};
+	var W = window;
+	W.Ta = W.Tangular = tangular;
+	W.Thelpers = tangular.helpers;
+	return W;
 });
 define('skylark-tangular/main',[
 	"./tangular",
