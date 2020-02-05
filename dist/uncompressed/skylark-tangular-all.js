@@ -131,9 +131,7 @@ define('skylark-langx/skylark',[
 define('skylark-tangular/tangular',[
 	"skylark-langx/skylark"
 ],function(skylark){
-	var totaljs = skylark.totaljs = skylark.totaljs  || {};
-
-	var tangular = totaljs.tangular = {};
+	var tangular = skylark.attach("intg.totaljs.tangular",{}); 
 	var Thelpers = tangular.helpers = {};
 	tangular.version = 'v3.0.1';
 	tangular.cache = {};
