@@ -5,5 +5,5 @@
  * @link https://github.com/skylark-integration/skylark-tangular/
  * @license MIT
  */
-define(["./tangular","./helpers"],function(e){var r=window;return r.Ta=r.Tangular=e,r.Thelpers=e.helpers,r});
+define(["./tangular","./helpers"],function(e){return function(){var n=window;n.Ta=n.Tangular=e,n.Thelpers=e.helpers}});
 //# sourceMappingURL=sourcemaps/globals.js.map
