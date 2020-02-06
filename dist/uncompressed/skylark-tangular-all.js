@@ -488,23 +488,13 @@ define('skylark-tangular/render',[
 	};
 
 });
-define('skylark-tangular/globals',[
-	"./tangular",
-	"./helpers"
-],function(tangular){
-	var W = window;
-	W.Ta = W.Tangular = tangular;
-	W.Thelpers = tangular.helpers;
-	return W;
-});
 define('skylark-tangular/main',[
 	"./tangular",
 	"./compile",
 	"./helpers",
 	"./register",
 	"./render",
-	"./Template",
-	"./globals"
+	"./Template"
 ],function(tangular){
 
 	return tangular;

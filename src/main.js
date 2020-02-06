@@ -4,8 +4,7 @@ define([
 	"./helpers",
 	"./register",
 	"./render",
-	"./Template",
-	"./globals"
+	"./Template"
 ],function(tangular){
 
 	return tangular;
